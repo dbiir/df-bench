@@ -20,28 +20,28 @@ def add_date(datestr, dy=0, dm=0, dd=0):
 
 
 def load_lineitem(con, root: str):
-    data_path = root + "/lineitem.pq/*.parquet"
+    data_path = root + "/lineitem.parquet/*.parquet"
     con.read_parquet(data_path, table_name="lineitem")
     t = con.table("lineitem")
     return t
 
 
 def load_part(con, root: str):
-    data_path = root + "/part.pq/*.parquet"
+    data_path = root + "/part.parquet/*.parquet"
     con.read_parquet(data_path, table_name="part")
     t = con.table("part")
     return t
 
 
 def load_orders(con, root: str):
-    data_path = root + "/orders.pq/*.parquet"
+    data_path = root + "/orders.parquet/*.parquet"
     con.read_parquet(data_path, table_name="orders")
     t = con.table("orders")
     return t
 
 
 def load_customer(con, root: str):
-    data_path = root + "/customer.pq/*.parquet"
+    data_path = root + "/customer.parquet/*.parquet"
     con.read_parquet(data_path, table_name="customer")
     t = con.table("customer")
     return t
@@ -69,7 +69,7 @@ def load_supplier(con, root: str):
 
 
 def load_partsupp(con, root: str):
-    data_path = root + "/partsupp.pq/*.parquet"
+    data_path = root + "/partsupp.parquet/*.parquet"
     con.read_parquet(data_path, table_name="partsupp")
     t = con.table("partsupp")
     return t

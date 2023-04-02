@@ -9,7 +9,7 @@ from utils import append_row
 
 @bodo.jit
 def load_lineitem(root: str):
-    data_path = root + "/lineitem.pq"
+    data_path = root + "/lineitem.parquet"
     df = pd.read_parquet(data_path)
     df.L_SHIPDATE = pd.to_datetime(df.L_SHIPDATE, format="%Y-%m-%d")
     df.L_RECEIPTDATE = pd.to_datetime(df.L_RECEIPTDATE, format="%Y-%m-%d")
@@ -19,14 +19,14 @@ def load_lineitem(root: str):
 
 @bodo.jit
 def load_part(root: str):
-    data_path = root + "/part.pq"
+    data_path = root + "/part.parquet"
     df = pd.read_parquet(data_path)
     return df
 
 
 @bodo.jit
 def load_orders(root: str):
-    data_path = root + "/orders.pq"
+    data_path = root + "/orders.parquet"
     df = pd.read_parquet(data_path)
     df.O_ORDERDATE = pd.to_datetime(df.O_ORDERDATE, format="%Y-%m-%d")
     return df
@@ -34,35 +34,35 @@ def load_orders(root: str):
 
 @bodo.jit
 def load_customer(root: str):
-    data_path = root + "/customer.pq"
+    data_path = root + "/customer.parquet"
     df = pd.read_parquet(data_path)
     return df
 
 
 @bodo.jit
 def load_nation(root: str):
-    data_path = root + "/nation.pq"
+    data_path = root + "/nation.parquet"
     df = pd.read_parquet(data_path)
     return df
 
 
 @bodo.jit
 def load_region(root: str):
-    data_path = root + "/region.pq"
+    data_path = root + "/region.parquet"
     df = pd.read_parquet(data_path)
     return df
 
 
 @bodo.jit
 def load_supplier(root: str):
-    data_path = root + "/supplier.pq"
+    data_path = root + "/supplier.parquet"
     df = pd.read_parquet(data_path)
     return df
 
 
 @bodo.jit
 def load_partsupp(root: str):
-    data_path = root + "/partsupp.pq"
+    data_path = root + "/partsupp.parquet"
     df = pd.read_parquet(data_path)
     return df
 

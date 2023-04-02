@@ -9,25 +9,25 @@ import polars as pl
 from utils import append_row
 
 def load_lineitem(root: str):
-    data_path = root + "/lineitem.pq/*.parquet"
+    data_path = root + "/lineitem.parquet/*.parquet"
     df = pl.read_parquet(data_path).lazy()
     return df
 
 
 def load_part(root: str):
-    data_path = root + "/part.pq/*.parquet"
+    data_path = root + "/part.parquet/*.parquet"
     df = pl.read_parquet(data_path).lazy()
     return df
 
 
 def load_orders(root: str):
-    data_path = root + "/orders.pq/*.parquet"
+    data_path = root + "/orders.parquet/*.parquet"
     df = pl.read_parquet(data_path).lazy()
     return df
 
 
 def load_customer(root: str):
-    data_path = root + "/customer.pq/*.parquet"
+    data_path = root + "/customer.parquet/*.parquet"
     df = pl.read_parquet(data_path).lazy()
     return df
 
@@ -51,7 +51,7 @@ def load_supplier(root: str):
 
 
 def load_partsupp(root: str):
-    data_path = root + "/partsupp.pq/*.parquet"
+    data_path = root + "/partsupp.parquet/*.parquet"
     df = pl.read_parquet(data_path).lazy()
     return df
 

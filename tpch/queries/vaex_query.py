@@ -10,7 +10,7 @@ import vaex
 from utils import append_row
 
 def load_lineitem(root: str):
-    data_path = root + "/lineitem.pq/*.parquet"
+    data_path = root + "/lineitem.parquet/*.parquet"
     df = vaex.open(data_path)
 
     df["L_SHIPDATE"] = df.L_SHIPDATE.astype('datetime64[ns]')
@@ -20,20 +20,20 @@ def load_lineitem(root: str):
 
 
 def load_part(root: str):
-    data_path = root + "/part.pq/*.parquet"
+    data_path = root + "/part.parquet/*.parquet"
     df = vaex.open(data_path)
     return df
 
 
 def load_orders(root: str):
-    data_path = root + "/orders.pq/*.parquet"
+    data_path = root + "/orders.parquet/*.parquet"
     df = vaex.open(data_path)
     df["O_ORDERDATE"] = df.O_ORDERDATE.astype('datetime64[ns]')
     return df
 
 
 def load_customer(root: str):
-    data_path = root + "/customer.pq/*.parquet"
+    data_path = root + "/customer.parquet/*.parquet"
     df = vaex.open(data_path)
     return df
 
@@ -57,7 +57,7 @@ def load_supplier(root: str):
 
 
 def load_partsupp(root: str):
-    data_path = root + "/partsupp.pq/*.parquet"
+    data_path = root + "/partsupp.parquet/*.parquet"
     df = vaex.open(data_path)
     return df
 

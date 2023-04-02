@@ -11,7 +11,7 @@ from utils import append_row
 
 
 def load_lineitem(root: str):
-    data_path = root + "/lineitem.pq"
+    data_path = root + "/lineitem.parquet"
     df = xd.read_parquet(data_path, use_arrow_dtype=True)
     df["L_SHIPDATE"] = xd.to_datetime(df["L_SHIPDATE"], format="%Y-%m-%d")
     df["L_RECEIPTDATE"] = xd.to_datetime(df["L_RECEIPTDATE"], format="%Y-%m-%d")
@@ -20,44 +20,44 @@ def load_lineitem(root: str):
 
 
 def load_part(root: str):
-    data_path = root + "/part.pq"
+    data_path = root + "/part.parquet"
     df = xd.read_parquet(data_path, use_arrow_dtype=False)
     return df
 
 
 def load_orders(root: str):
-    data_path = root + "/orders.pq"
+    data_path = root + "/orders.parquet"
     df = xd.read_parquet(data_path)
     df["O_ORDERDATE"] = xd.to_datetime(df["O_ORDERDATE"], format="%Y-%m-%d")
     return df
 
 
 def load_customer(root: str):
-    data_path = root + "/customer.pq"
+    data_path = root + "/customer.parquet"
     df = xd.read_parquet(data_path)
     return df
 
 
 def load_nation(root: str):
-    data_path = root + "/nation.pq"
+    data_path = root + "/nation.parquet"
     df = xd.read_parquet(data_path)
     return df
 
 
 def load_region(root: str):
-    data_path = root + "/region.pq"
+    data_path = root + "/region.parquet"
     df = xd.read_parquet(data_path)
     return df
 
 
 def load_supplier(root: str):
-    data_path = root + "/supplier.pq"
+    data_path = root + "/supplier.parquet"
     df = xd.read_parquet(data_path)
     return df
 
 
 def load_partsupp(root: str):
-    data_path = root + "/partsupp.pq"
+    data_path = root + "/partsupp.parquet"
     df = xd.read_parquet(data_path)
     return df
 
