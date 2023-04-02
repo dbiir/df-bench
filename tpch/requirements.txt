@@ -1,0 +1,13 @@
+polars
+black==22.3.0
+isort==5.10.1
+pandas
+pyarrow
+dask
+dask[distributed]
+modin[all]
+plotly
+vaex
+pyspark
+xorbits
+bodo
