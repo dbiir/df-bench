@@ -1,8 +1,23 @@
 # TPC-H benchmark for DataFrame Systems
 
+## Introduction
+
+## Installation
+
+Create an isolated environment using `conda` or `virtualenv`. In this case, we use `conda`. Install all the packages.
+
+```bash
+conda create -n tpch
+
+conda activate tpch
+conda install python=3.10
+
+pip install -r requirements.txt
+```
+
 ## Genernate TPC-H data
 
-### 1. Build tpch-dbgen
+### Build tpch-dbgen
 
 ```bash
 cd tpch-dbgen
@@ -12,13 +27,7 @@ cd ..
 
 If you make `tpch-dbgen` before, execute `make clean` to clean the previous build.
 
-### 2. Generate TPC-H data
-
-#### Install requirements
-
-```bash
-pip install -r requirements.txt
-```
+### Generate TPC-H data
 
 #### Usage
 
@@ -51,3 +60,17 @@ This script assumes `tpch-dbgen` is in the same directory. If you downloaded it 
 
 If using S3 bucket, install s3fs and add your AWS credentials.
 
+## Run the queries
+
+Go to the `queries` folder and execute the queries.
+
+```bash
+cd queries
+
+# run a specific query
+python pandas_query.py --path ../SF1 --queries 2
+
+# run all queries and log the time metrics
+# each query is executed twice, the first attempt is for data loading warmup
+python pandas_query.py --path ../SF1 --log_timing --io_warmup
+```
