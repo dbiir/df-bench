@@ -4,14 +4,17 @@
 
 ## Installation
 
-Create an isolated environment using `conda` or `virtualenv`. In this case, we use `conda`. Install all the packages.
+Create an isolated environment using `conda` or `virtualenv`. In this case, we use `conda`. 
 
 ```bash
 conda create -n tpch
-
 conda activate tpch
 conda install python=3.10
+```
 
+Install all the packages.
+
+```bash
 pip install -r requirements.txt
 ```
 
@@ -42,13 +45,13 @@ python generate_data_pq.py [-h] --folder FOLDER [--SF N] [--validate_dataset]
 
 #### Example
 
-Generate 1GB data locally:
+Generate scale factor 1 data locally:
 
 ```bash
 python generate_data_pq.py --SF 1 --folder SF1
 ```
 
-Generate 1TB data and upload to S3 bucket:
+Generate scale factor 1000 data and upload to S3 bucket:
 
 ```bash
 python generate_data_pq.py --SF 1000 --folder s3://bucket-name/
