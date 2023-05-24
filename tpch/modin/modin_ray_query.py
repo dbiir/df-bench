@@ -1,13 +1,14 @@
 import argparse
 import json
 import time
+from typing import Dict
 
-import pandas as pd
-import bodo
+import ray
+import modin.pandas as pd
 
-from utils import append_row
+from ..common_utils import append_row
 
-@bodo.jit
+
 def load_lineitem(root: str):
     data_path = root + "/lineitem.parquet"
     df = pd.read_parquet(data_path)
@@ -17,14 +18,12 @@ def load_lineitem(root: str):
     return df
 
 
-@bodo.jit
 def load_part(root: str):
     data_path = root + "/part.parquet"
     df = pd.read_parquet(data_path)
     return df
 
 
-@bodo.jit
 def load_orders(root: str):
     data_path = root + "/orders.parquet"
     df = pd.read_parquet(data_path)
@@ -32,44 +31,37 @@ def load_orders(root: str):
     return df
 
 
-@bodo.jit
 def load_customer(root: str):
     data_path = root + "/customer.parquet"
     df = pd.read_parquet(data_path)
     return df
 
 
-@bodo.jit
 def load_nation(root: str):
     data_path = root + "/nation.parquet"
     df = pd.read_parquet(data_path)
     return df
 
 
-@bodo.jit
 def load_region(root: str):
     data_path = root + "/region.parquet"
     df = pd.read_parquet(data_path)
     return df
 
 
-@bodo.jit
 def load_supplier(root: str):
     data_path = root + "/supplier.parquet"
     df = pd.read_parquet(data_path)
     return df
 
 
-@bodo.jit
 def load_partsupp(root: str):
     data_path = root + "/partsupp.parquet"
     df = pd.read_parquet(data_path)
     return df
 
 
-@bodo.jit
 def q01(root: str):
-    t1 = time.time()
     lineitem = load_lineitem(root)
 
     date = pd.Timestamp("1998-09-02")
@@ -124,10 +116,8 @@ def q01(root: str):
     )
     total = total.sort_values(["L_RETURNFLAG", "L_LINESTATUS"])
     print(total)
-    print("Q01 Execution time (s): ", time.time() - t1)
 
 
-@bodo.jit
 def q02(root: str):
     t1 = time.time()
     part = load_part(root)
@@ -249,7 +239,7 @@ def q02(root: str):
     print("Q02 Execution time (s): ", time.time() - t1)
 
 
-@bodo.jit
+
 def q03(root: str):
     t1 = time.time()
     lineitem = load_lineitem(root)
@@ -285,7 +275,7 @@ def q03(root: str):
     print("Q03 Execution time (s): ", time.time() - t1)
 
 
-@bodo.jit
+
 def q04(root: str):
     t1 = time.time()
     lineitem = load_lineitem(root)
@@ -307,7 +297,7 @@ def q04(root: str):
     print("Q04 Execution time (s): ", time.time() - t1)
 
 
-@bodo.jit
+
 def q05(root: str):
     t1 = time.time()
     lineitem = load_lineitem(root)
@@ -337,7 +327,7 @@ def q05(root: str):
     print("Q05 Execution time (s): ", time.time() - t1)
 
 
-@bodo.jit
+
 def q06(root: str):
     t1 = time.time()
     lineitem = load_lineitem(root)
@@ -360,7 +350,7 @@ def q06(root: str):
     print("Q06 Execution time (s): ", time.time() - t1)
 
 
-@bodo.jit
+
 def q07(root: str):
     lineitem = load_lineitem(root)
     orders = load_orders(root)
@@ -464,7 +454,7 @@ def q07(root: str):
     print("Q07 Execution time (s): ", time.time() - t1)
 
 
-@bodo.jit
+
 def q08(root: str):
     t1 = time.time()
     part = load_part(root)
@@ -545,7 +535,7 @@ def q08(root: str):
     print("Q08 Execution time (s): ", time.time() - t1)
 
 
-@bodo.jit
+
 def q09(root: str):
     t1 = time.time()
     part = load_part(root)
@@ -574,7 +564,7 @@ def q09(root: str):
     print("Q09 Execution time (s): ", time.time() - t1)
 
 
-@bodo.jit
+
 def q10(root: str):
     t1 = time.time()
     lineitem = load_lineitem(root)
@@ -609,7 +599,6 @@ def q10(root: str):
     print("Q10 Execution time (s): ", time.time() - t1)
 
 
-@bodo.jit
 def q11(root: str):
     t1 = time.time()
     partsupp = load_partsupp(root)
@@ -641,7 +630,7 @@ def q11(root: str):
     print("Q11 Execution time (s): ", time.time() - t1)
 
 
-@bodo.jit
+
 def q12(root: str):
     t1 = time.time()
     lineitem = load_lineitem(root)
@@ -673,7 +662,6 @@ def q12(root: str):
     print("Q12 Execution time (s): ", time.time() - t1)
 
 
-@bodo.jit
 def q13(root: str):
     t1 = time.time()
     customer = load_customer(root)
@@ -704,7 +692,6 @@ def q13(root: str):
     print("Q13 Execution time (s): ", time.time() - t1)
 
 
-@bodo.jit
 def q14(root: str):
     t1 = time.time()
     lineitem = load_lineitem(root)
@@ -728,7 +715,6 @@ def q14(root: str):
     print("Q14 Execution time (s): ", time.time() - t1)
 
 
-@bodo.jit
 def q15(root: str):
     t1 = time.time()
     lineitem = load_lineitem(root)
@@ -763,7 +749,6 @@ def q15(root: str):
     print("Q15 Execution time (s): ", time.time() - t1)
 
 
-@bodo.jit
 def q16(root: str):
     t1 = time.time()
     part = load_part(root)
@@ -803,7 +788,6 @@ def q16(root: str):
     print("Q16 Execution time (s): ", time.time() - t1)
 
 
-@bodo.jit
 def q17(root: str):
     t1 = time.time()
     lineitem = load_lineitem(root)
@@ -833,7 +817,6 @@ def q17(root: str):
     print("Q17 Execution time (s): ", time.time() - t1)
 
 
-@bodo.jit
 def q18(root: str):
     t1 = time.time()
     lineitem = load_lineitem(root)
@@ -852,7 +835,7 @@ def q18(root: str):
     print(total.head(100))
     print("Q18 Execution time (s): ", time.time() - t1)
 
-@bodo.jit
+
 def q19(root: str):
     t1 = time.time()
     lineitem = load_lineitem(root)
@@ -957,7 +940,6 @@ def q19(root: str):
     print("Q19 Execution time (s): ", time.time() - t1)
 
 
-@bodo.jit
 def q20(root: str):
     t1 = time.time()
     lineitem = load_lineitem(root)
@@ -993,7 +975,6 @@ def q20(root: str):
     print("Q20 Execution time (s): ", time.time() - t1)
 
 
-@bodo.jit
 def q21(root: str):
     t1 = time.time()
     lineitem = load_lineitem(root)
@@ -1074,7 +1055,6 @@ def q21(root: str):
     print("Q21 Execution time (s): ", time.time() - t1)
 
 
-@bodo.jit
 def q22(root: str):
     t1 = time.time()
     customer = load_customer(root)
@@ -1193,7 +1173,7 @@ query_to_runner = {
 }
 
 
-def run_queries(path, queries, log_timeing = True, io_warmup = True):
+def run_queries(path, queries, log_timing = True, io_warmup = True):
 
     total_start = time.time()
     for query in queries:
@@ -1208,13 +1188,13 @@ def run_queries(path, queries, log_timeing = True, io_warmup = True):
             dur = 0.0
             success = False
         finally:
-            if log_timeing and bodo.get_rank() == 0:
-                append_row("bodo-8core", query, dur, bodo.__version__, success)
+            if log_timing:
+                append_row("modin on ray", query, dur, pd.__version__, success)
     print(f"Total query execution time (s): {time.time() - total_start}")
 
 
 def main():
-    parser = argparse.ArgumentParser(description="bodo TPC-H benchmark.")
+    parser = argparse.ArgumentParser(description="modin on ray TPC-H benchmark.")
     parser.add_argument(
         "--path", type=str, required=True, help="Path to the TPC-H dataset."
     )
@@ -1241,6 +1221,12 @@ def main():
         action="store_true",
         help="Warm up IO data loading or not.",
     )
+    parser.add_argument(
+        "--endpoint",
+        type=str,
+        required=False,
+        help="The endpoint of existing Ray cluster."
+    )
     args = parser.parse_args()
     log_timing = args.log_timing
     io_warmup = args.io_warmup
@@ -1261,7 +1247,13 @@ def main():
         queries = args.queries
     print(f"Queries to run: {queries}")
 
+    if ray.is_initialized:
+        ray.shutdown()
+    print(f"initializa ray: {args.endpoint}")
+    # ray.init(address=args.endpoint)
+    ray.init(address="auto")
     run_queries(path, queries, log_timing, io_warmup)
+    ray.shutdown()
 
 
 if __name__ == "__main__":

@@ -1,0 +1,14 @@
+UserWarning: The pandas version installed (1.5.0) does not match the supported pandas version in Modin (1.5.3). This may cause undesired side effects!
+Traceback (most recent call last):
+  File "/home/u20200002/hpc/test_xorbits/df-bench/tpch/modin/modin_unidist_query.py", line 10, in <module>
+    from ..common_utils import append_row
+ImportError: attempted relative import with no known parent package
+srun: Job step aborted: Waiting up to 32 seconds for job step to finish.
+slurmstepd: error: *** JOB 165832 ON cpu24c-46 CANCELLED AT 2023-05-23T14:39:14 ***
+slurmstepd: error: *** STEP 165832.0 ON cpu24c-46 CANCELLED AT 2023-05-23T14:39:14 ***
+srun: Job step aborted: Waiting up to 32 seconds for job step to finish.
+slurmstepd: error: *** JOB 165830 ON cpu24c-42 CANCELLED AT 2023-05-23T14:39:17 ***
+slurmstepd: error: *** STEP 165830.0 ON cpu24c-42 CANCELLED AT 2023-05-23T14:39:17 ***
+srun: Job step aborted: Waiting up to 32 seconds for job step to finish.
+slurmstepd: error: *** STEP 165827.0 ON cpu24c-33 CANCELLED AT 2023-05-23T14:39:22 ***
+slurmstepd: error: *** JOB 165827 ON cpu24c-33 CANCELLED AT 2023-05-23T14:39:22 ***

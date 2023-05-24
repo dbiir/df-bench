@@ -8,7 +8,14 @@ import pandas
 
 import dask
 import dask.dataframe as pd
+from dask_cuda import LocalCUDACluster
+from distributed import Client
+
+# from dask_mpi import initialize
+# initialize()
+
 from dask.distributed import Client, wait, LocalCluster
+import socket
 
 from utils import append_row
 
@@ -1281,7 +1288,15 @@ def main():
         queries = args.queries
     print(f"Queries to run: {queries}")
 
-    cluster = LocalCluster() 
+    # cluster = LocalCluster() 
+    cluster = SLURMCluster(
+        cores=64,
+        memory='496GB',
+        processes=8,
+        shebang='#!/usr/bin/env bash',
+        queue="cpu64c",
+    )
+    cluster.scale(32)
     client = Client(cluster)
     run_queries(path, queries, log_timing, io_warmup)
 

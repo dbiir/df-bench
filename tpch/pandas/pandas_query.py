@@ -1,67 +1,124 @@
+import os
+import sys
 import argparse
 import json
 import time
 import traceback
 
 import pandas as pd
+from pandas.core.frame import DataFrame
+pd.set_option('display.max_columns', None)
 
-from utils import append_row
+current_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.dirname(current_dir)
+sys.path.append(parent_dir)
+from common_utils import append_row, ANSWERS_BASE_DIR
 
+dataset_dict = {}
 
-def load_lineitem(root: str):
-    data_path = root + "/lineitem.parquet"
-    df = pd.read_parquet(data_path)
-    df.L_SHIPDATE = pd.to_datetime(df.L_SHIPDATE, format="%Y-%m-%d")
-    df.L_RECEIPTDATE = pd.to_datetime(df.L_RECEIPTDATE, format="%Y-%m-%d")
-    df.L_COMMITDATE = pd.to_datetime(df.L_COMMITDATE, format="%Y-%m-%d")
-    return df
-
-
-def load_part(root: str):
-    data_path = root + "/part.parquet"
-    df = pd.read_parquet(data_path)
-    return df
-
-
-def load_orders(root: str):
-    data_path = root + "/orders.parquet"
-    df = pd.read_parquet(data_path)
-    df.O_ORDERDATE = pd.to_datetime(df.O_ORDERDATE, format="%Y-%m-%d")
-    return df
-
-
-def load_customer(root: str):
-    data_path = root + "/customer.parquet"
-    df = pd.read_parquet(data_path)
-    return df
+def load_lineitem(root: str, 
+                include_io: bool=False):
+    if 'lineitem' not in dataset_dict or include_io:
+        data_path = root + "/lineitem.parquet"
+        df = pd.read_parquet(data_path)
+        df.L_SHIPDATE = pd.to_datetime(df.L_SHIPDATE, format="%Y-%m-%d")
+        df.L_RECEIPTDATE = pd.to_datetime(df.L_RECEIPTDATE, format="%Y-%m-%d")
+        df.L_COMMITDATE = pd.to_datetime(df.L_COMMITDATE, format="%Y-%m-%d")
+        result = df
+        dataset_dict['lineitem'] = result
+    else:
+        result = dataset_dict['lineitem']
+    return result
 
 
-def load_nation(root: str):
-    data_path = root + "/nation.parquet"
-    df = pd.read_parquet(data_path)
-    return df
+def load_part(root: str, 
+            include_io: bool=False):
+    if 'part' not in dataset_dict or include_io:
+        data_path = root + "/part.parquet"
+        df = pd.read_parquet(data_path)
+        result = df
+        dataset_dict['part'] = result
+    else:
+        result = dataset_dict['part']
+    return result
 
 
-def load_region(root: str):
-    data_path = root + "/region.parquet"
-    df = pd.read_parquet(data_path)
-    return df
+def load_orders(root: str,
+            include_io: bool=False):
+    if "orders" not in dataset_dict or include_io:
+        data_path = root + "/orders.parquet"
+        df = pd.read_parquet(data_path)
+        df.O_ORDERDATE = pd.to_datetime(df.O_ORDERDATE, format="%Y-%m-%d")
+        result = df
+        dataset_dict['orders'] = result
+    else:
+        result = dataset_dict['orders']
+    return result
 
 
-def load_supplier(root: str):
-    data_path = root + "/supplier.parquet"
-    df = pd.read_parquet(data_path)
-    return df
+def load_customer(root: str,
+            include_io: bool=False):
+    if "customer" not in dataset_dict or include_io:
+        data_path = root + "/customer.parquet"
+        df = pd.read_parquet(data_path)
+        result = df
+        dataset_dict['customer'] = result
+    else:
+        result = dataset_dict['customer']
+    return result
 
 
-def load_partsupp(root: str):
-    data_path = root + "/partsupp.parquet"
-    df = pd.read_parquet(data_path)
-    return df
+def load_nation(root: str,
+            include_io: bool=False):
+    if "nation" not in dataset_dict or include_io:
+        data_path = root + "/nation.parquet"
+        df = pd.read_parquet(data_path)
+        result = df
+        dataset_dict['nation'] = result
+    else:
+        result = dataset_dict['nation']
+    return result
 
 
-def q01(root: str):
-    lineitem = load_lineitem(root)
+def load_region(root: str,
+            include_io: bool=False):
+    if "region" not in dataset_dict or include_io:
+        data_path = root + "/region.parquet"
+        df = pd.read_parquet(data_path)
+        result = df
+        dataset_dict['region'] = result
+    else:
+        result = dataset_dict['region']
+    return result
+
+
+def load_supplier(root: str,
+            include_io: bool=False):
+    if "supplier" not in dataset_dict or include_io:
+        data_path = root + "/supplier.parquet"
+        df = pd.read_parquet(data_path)
+        result = df
+        dataset_dict['supplier'] = result
+    else:
+        result = dataset_dict['supplier']
+    return result
+
+
+def load_partsupp(root: str,
+            include_io: bool=False):
+    if "partsupp" not in dataset_dict or include_io:
+        data_path = root + "/partsupp.parquet"
+        df = pd.read_parquet(data_path)
+        result = df
+        dataset_dict['partsupp'] = result
+    else:
+        result = dataset_dict['partsupp']
+    return result
+
+
+def q01(root: str, 
+        include_io: bool=False):
+    lineitem = load_lineitem(root, include_io)
 
     date = pd.Timestamp("1998-09-02")
     lineitem_filtered = lineitem.loc[
@@ -114,11 +171,12 @@ def q01(root: str):
         }
     )
     total = total.sort_values(["L_RETURNFLAG", "L_LINESTATUS"])
-    print(total)
+    
+    return total
 
 
-def q02(root: str):
-    t1 = time.time()
+def q02(root: str, 
+        include_io: bool=False):
     part = load_part(root)
     partsupp = load_partsupp(root)
     supplier = load_supplier(root)
@@ -234,12 +292,14 @@ def q02(root: str):
             True,
         ],
     )
-    print(total)
-    print("Q02 Execution time (s): ", time.time() - t1)
+
+    total = total.head(100)
+    
+    return total
 
 
-def q03(root: str):
-    t1 = time.time()
+def q03(root: str, 
+        include_io: bool=False):
     lineitem = load_lineitem(root)
     orders = load_orders(root)
     customer = load_customer(root)
@@ -269,13 +329,13 @@ def q03(root: str):
         .sort_values(["TMP"], ascending=False)
     )
     res = total.loc[:, ["L_ORDERKEY", "TMP", "O_ORDERDATE", "O_SHIPPRIORITY"]]
-    print(res.head(10))
-    print("Q03 Execution time (s): ", time.time() - t1)
+    res = res.head(10)
+
+    return res
 
 
-
-def q04(root: str):
-    t1 = time.time()
+def q04(root: str, 
+        include_io: bool=False):
     lineitem = load_lineitem(root)
     orders = load_orders(root)
 
@@ -291,12 +351,12 @@ def q04(root: str):
         .count()
         .sort_values(["O_ORDERPRIORITY"])
     )
-    print(total)
-    print("Q04 Execution time (s): ", time.time() - t1)
+    
+    return total
 
 
-def q05(root: str):
-    t1 = time.time()
+def q05(root: str, 
+        include_io: bool=False):
     lineitem = load_lineitem(root)
     orders = load_orders(root)
     customer = load_customer(root)
@@ -317,14 +377,15 @@ def q05(root: str):
     jn5 = supplier.merge(
         jn4, left_on=["S_SUPPKEY", "S_NATIONKEY"], right_on=["L_SUPPKEY", "N_NATIONKEY"]
     )
-    jn5["TMP"] = jn5.L_EXTENDEDPRICE * (1.0 - jn5.L_DISCOUNT)
-    gb = jn5.groupby("N_NAME", as_index=False)["TMP"].sum()
-    total = gb.sort_values("TMP", ascending=False)
-    print(total)
-    print("Q05 Execution time (s): ", time.time() - t1)
+    jn5["REVENUE"] = jn5.L_EXTENDEDPRICE * (1.0 - jn5.L_DISCOUNT)
+    gb = jn5.groupby("N_NAME", as_index=False)["REVENUE"].sum()
+    total = gb.sort_values("REVENUE", ascending=False)
+    
+    return total
 
 
-def q06(root: str):
+def q06(root: str, 
+        include_io: bool=False):
     t1 = time.time()
     lineitem = load_lineitem(root)
 
@@ -342,12 +403,12 @@ def q06(root: str):
     )
     flineitem = lineitem_filtered[sel]
     total = (flineitem.L_EXTENDEDPRICE * flineitem.L_DISCOUNT).sum()
-    print(total)
-    print("Q06 Execution time (s): ", time.time() - t1)
+    
+    return total
 
 
-
-def q07(root: str):
+def q07(root: str, 
+        include_io: bool=False):
     lineitem = load_lineitem(root)
     orders = load_orders(root)
     customer = load_customer(root)
@@ -446,12 +507,12 @@ def q07(root: str):
             True,
         ],
     )
-    print(total)
-    print("Q07 Execution time (s): ", time.time() - t1)
+    
+    return total
 
 
-def q08(root: str):
-    t1 = time.time()
+def q08(root: str, 
+        include_io: bool=False):
     part = load_part(root)
     lineitem = load_lineitem(root)
     orders = load_orders(root)
@@ -526,12 +587,12 @@ def q08(root: str):
             True,
         ],
     )
-    print(total)
-    print("Q08 Execution time (s): ", time.time() - t1)
+    
+    return total
 
 
-def q09(root: str):
-    t1 = time.time()
+def q09(root: str, 
+        include_io: bool=False):
     part = load_part(root)
     partsupp = load_partsupp(root)
     lineitem = load_lineitem(root)
@@ -554,11 +615,12 @@ def q09(root: str):
     jn5["O_YEAR"] = jn5.O_ORDERDATE.apply(lambda x: x.year)
     gb = jn5.groupby(["N_NAME", "O_YEAR"], as_index=False)["TMP"].sum()
     total = gb.sort_values(["N_NAME", "O_YEAR"], ascending=[True, False])
-    print(total)
-    print("Q09 Execution time (s): ", time.time() - t1)
+    
+    return total
 
 
-def q10(root: str):
+def q10(root: str, 
+        include_io: bool=False):
     t1 = time.time()
     lineitem = load_lineitem(root)
     orders = load_orders(root)
@@ -588,12 +650,12 @@ def q10(root: str):
         as_index=False,
     )["TMP"].sum()
     total = gb.sort_values("TMP", ascending=False)
-    print(total.head(20))
-    print("Q10 Execution time (s): ", time.time() - t1)
+    total = total.head(20)
+    return total
 
 
-def q11(root: str):
-    t1 = time.time()
+def q11(root: str, 
+        include_io: bool=False):
     partsupp = load_partsupp(root)
     supplier = load_supplier(root)
     nation = load_nation(root)
@@ -619,12 +681,12 @@ def q11(root: str):
     )
     total = total[total["VALUE"] > sum_val]
     total = total.sort_values("VALUE", ascending=False)
-    print(total)
-    print("Q11 Execution time (s): ", time.time() - t1)
+    
+    return total
 
 
-def q12(root: str):
-    t1 = time.time()
+def q12(root: str, 
+        include_io: bool=False):
     lineitem = load_lineitem(root)
     orders = load_orders(root)
 
@@ -650,12 +712,11 @@ def q12(root: str):
 
     total = jn.groupby("L_SHIPMODE", as_index=False)["O_ORDERPRIORITY"].agg((g1, g2))
     total = total.sort_values("L_SHIPMODE")
-    print(total)
-    print("Q12 Execution time (s): ", time.time() - t1)
+    return total
 
 
-def q13(root: str):
-    t1 = time.time()
+def q13(root: str, 
+        include_io: bool=False):
     customer = load_customer(root)
     orders = load_orders(root)
 
@@ -680,12 +741,12 @@ def q13(root: str):
             False,
         ],
     )
-    print(total)
-    print("Q13 Execution time (s): ", time.time() - t1)
+    
+    return total
 
 
-def q14(root: str):
-    t1 = time.time()
+def q14(root: str, 
+        include_io: bool=False):
     lineitem = load_lineitem(root)
     part = load_part(root)
 
@@ -703,11 +764,12 @@ def q14(root: str):
     jn = flineitem.merge(part_filtered, left_on="L_PARTKEY", right_on="P_PARTKEY")
     jn["TMP"] = jn.L_EXTENDEDPRICE * (1.0 - jn.L_DISCOUNT)
     total = jn[jn.P_TYPE.str.startswith(p_type_like)].TMP.sum() * 100 / jn.TMP.sum()
-    print(total)
-    print("Q14 Execution time (s): ", time.time() - t1)
+    
+    return total
 
 
-def q15(root: str):
+def q15(root: str, 
+        include_io: bool=False):
     t1 = time.time()
     lineitem = load_lineitem(root)
     supplier = load_supplier(root)
@@ -737,12 +799,12 @@ def q15(root: str):
     total = total.loc[
         :, ["S_SUPPKEY", "S_NAME", "S_ADDRESS", "S_PHONE", "TOTAL_REVENUE"]
     ]
-    print(total)
+    
     print("Q15 Execution time (s): ", time.time() - t1)
 
 
-def q16(root: str):
-    t1 = time.time()
+def q16(root: str, 
+        include_io: bool=False):
     part = load_part(root)
     partsupp = load_partsupp(root)
     supplier = load_supplier(root)
@@ -776,12 +838,12 @@ def q16(root: str):
         by=["SUPPLIER_CNT", "P_BRAND", "P_TYPE", "P_SIZE"],
         ascending=[False, True, True, True],
     )
-    print(total)
-    print("Q16 Execution time (s): ", time.time() - t1)
+    
+    return total
 
 
-def q17(root: str):
-    t1 = time.time()
+def q17(root: str, 
+        include_io: bool=False):
     lineitem = load_lineitem(root)
     part = load_part(root)
 
@@ -805,12 +867,12 @@ def q17(root: str):
     )
     total = total[total["L_QUANTITY"] < total["avg"]]
     total = pd.DataFrame({"avg_yearly": [total["L_EXTENDEDPRICE"].sum() / 7.0]})
-    print(total)
-    print("Q17 Execution time (s): ", time.time() - t1)
+    
+    return total
 
 
-def q18(root: str):
-    t1 = time.time()
+def q18(root: str, 
+        include_io: bool=False):
     lineitem = load_lineitem(root)
     orders = load_orders(root)
     customer = load_customer(root)
@@ -825,11 +887,11 @@ def q18(root: str):
     )["L_QUANTITY"].sum()
     total = gb2.sort_values(["O_TOTALPRICE", "O_ORDERDATE"], ascending=[False, True])
     print(total.head(100))
-    print("Q18 Execution time (s): ", time.time() - t1)
+    return total
 
 
-def q19(root: str):
-    t1 = time.time()
+def q19(root: str, 
+        include_io: bool=False):
     lineitem = load_lineitem(root)
     part = load_part(root)
 
@@ -928,12 +990,12 @@ def q19(root: str):
     )
     jn = jn[jnsel]
     total = (jn.L_EXTENDEDPRICE * (1.0 - jn.L_DISCOUNT)).sum()
-    print(total)
-    print("Q19 Execution time (s): ", time.time() - t1)
+    
+    return total
 
 
-def q20(root: str):
-    t1 = time.time()
+def q20(root: str, 
+        include_io: bool=False):
     lineitem = load_lineitem(root)
     part = load_part(root)
     nation = load_nation(root)
@@ -963,12 +1025,11 @@ def q20(root: str):
     jn4 = fnation.merge(jn3, left_on="N_NATIONKEY", right_on="S_NATIONKEY")
     jn4 = jn4.loc[:, ["S_NAME", "S_ADDRESS"]]
     total = jn4.sort_values("S_NAME").drop_duplicates()
-    print(total)
-    print("Q20 Execution time (s): ", time.time() - t1)
+    
+    return total
 
 
-def q21(root: str):
-    t1 = time.time()
+def q21(root: str, include_io: bool=False):
     lineitem = load_lineitem(root)
     orders = load_orders(root)
     supplier = load_supplier(root)
@@ -1043,12 +1104,12 @@ def q21(root: str):
             True,
         ],
     )
-    print(total)
-    print("Q21 Execution time (s): ", time.time() - t1)
+    
+    return total
 
 
-def q22(root: str):
-    t1 = time.time()
+def q22(root: str, 
+        include_io: bool=False):
     customer = load_customer(root)
     orders = load_orders(root)
 
@@ -1088,8 +1149,8 @@ def q22(root: str):
             True,
         ],
     )
-    print(total)
-    print("Q22 Execution time (s): ", time.time() - t1)
+    
+    return total
 
 
 query_to_loaders = {
@@ -1165,17 +1226,60 @@ query_to_runner = {
 }
 
 
-def run_queries(path, queries, log_timing = True, io_warmup = True):
+def get_query_answer(query: int, base_dir: str = ANSWERS_BASE_DIR) -> DataFrame:
+    answer_df = pd.read_csv(
+        os.path.join(base_dir, f"q{query}.out"),
+        sep="|",
+        parse_dates=True,
+        infer_datetime_format=True,
+    )
+    return answer_df.rename(columns=lambda x: x.strip())
 
+
+def test_results(q_num: int, result_df: DataFrame):
+    answer = get_query_answer(q_num)
+
+    for column_index in range(len(answer.columns)):
+        column_name = answer.columns[column_index]
+        column_data_type = answer.iloc[:, column_index].dtype
+
+        s1 = result_df.iloc[:, column_index]
+        s2 = answer.iloc[:, column_index]
+
+        if column_data_type.name == "object":
+            s1 = s1.astype("string").apply(lambda x: x.strip())
+            s2 = s2.astype("string").apply(lambda x: x.strip())
+        
+        pd.testing.assert_series_equal(left=s1, right=s2, 
+                check_index=False, 
+                check_names=False, 
+                check_exact=False, 
+                rtol=1e-2)
+
+
+def run_queries(path, queries, 
+            log_timing = True, 
+            include_io = False, 
+            test_result = True, 
+            print_result = False):
+    print("Start data loading")
+    total_start = time.time()
+    for query in queries:
+        loaders = query_to_loaders[query]
+        for loader in loaders:
+            loader(path, include_io)
+    print(f"Data loading time (s): {time.time() - total_start}")
     total_start = time.time()
     for query in queries:
         try:
-            if io_warmup:
-                query_to_runner[query](path)
             t1 = time.time()
-            query_to_runner[query](path)
+            result = query_to_runner[query](path, include_io)
             dur = time.time() - t1
             success = True
+            if test_result:
+                test_results(query, result)
+            if print_result:
+                print(result)
         except Exception as e: 
             print(''.join(traceback.TracebackException.from_exception(e).format()))
             dur = 0.0
@@ -1187,36 +1291,49 @@ def run_queries(path, queries, log_timing = True, io_warmup = True):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="pandas TPC-H benchmark.")
+    parser = argparse.ArgumentParser(description="TPC-H benchmark.")
     parser.add_argument(
-        "--path", type=str, required=True, help="Path to the TPC-H dataset."
+        "--path", type=str, required=True, help="path to the TPC-H dataset."
     )
     parser.add_argument(
         "--storage_options",
         type=str,
         required=False,
-        help="Path to the storage options json file.",
+        help="storage options json file.",
     )
     parser.add_argument(
         "--queries",
         type=int,
         nargs="+",
         required=False,
-        help="Comma separated TPC-H queries to run.",
+        help="comma separated TPC-H queries to run.",
     )
     parser.add_argument(
         "--log_timing",
         action="store_true",
-        help="Log time metrics or not.",
+        help="log time metrics or not.",
     )
     parser.add_argument(
-        "--io_warmup",
+        "--include_io",
         action="store_true",
-        help="Warm up IO data loading or not.",
+        help="include IO or not.",
     )
+    parser.add_argument(
+        "--test_answer",
+        action="store_true",
+        help="test results with official answers.",
+    )
+    parser.add_argument(
+        "--print_result",
+        action="store_true",
+        help="print result.",
+    )
+    
     args = parser.parse_args()
     log_timing = args.log_timing
-    io_warmup = args.io_warmup
+    include_io = args.include_io
+    test_answer = args.test_answer
+    print_result = args.print_result
 
     # path to TPC-H data in parquet.
     path = args.path
@@ -1234,7 +1351,7 @@ def main():
         queries = args.queries
     print(f"Queries to run: {queries}")
 
-    run_queries(path, queries, log_timing, io_warmup)
+    run_queries(path, queries, log_timing, include_io, test_answer, print_result)
 
 
 if __name__ == "__main__":
