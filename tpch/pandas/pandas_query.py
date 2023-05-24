@@ -292,7 +292,6 @@ def q02(root: str,
             True,
         ],
     )
-
     total = total.head(100)
     
     return total
@@ -386,7 +385,6 @@ def q05(root: str,
 
 def q06(root: str, 
         include_io: bool=False):
-    t1 = time.time()
     lineitem = load_lineitem(root)
 
     date1 = pd.Timestamp("1996-01-01")
@@ -621,7 +619,6 @@ def q09(root: str,
 
 def q10(root: str, 
         include_io: bool=False):
-    t1 = time.time()
     lineitem = load_lineitem(root)
     orders = load_orders(root)
     nation = load_nation(root)
@@ -770,7 +767,6 @@ def q14(root: str,
 
 def q15(root: str, 
         include_io: bool=False):
-    t1 = time.time()
     lineitem = load_lineitem(root)
     supplier = load_supplier(root)
     
@@ -800,7 +796,7 @@ def q15(root: str,
         :, ["S_SUPPKEY", "S_NAME", "S_ADDRESS", "S_PHONE", "TOTAL_REVENUE"]
     ]
     
-    print("Q15 Execution time (s): ", time.time() - t1)
+    return total
 
 
 def q16(root: str, 

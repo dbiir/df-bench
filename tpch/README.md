@@ -12,7 +12,7 @@ conda activate tpch
 conda install python=3.10
 ```
 
-Install all the packages.
+Install the packages which will be used for TPC-H data generation.
 
 ```bash
 pip install -r requirements.txt
@@ -65,15 +65,22 @@ If using S3 bucket, install s3fs and add your AWS credentials.
 
 ## Run the queries
 
-Go to the `queries` folder and execute the queries.
+Each sub-folder contains how to run the queries on specific DataFrame implementation.
+
+For example, go to `pandas` folder:
 
 ```bash
-cd queries
+cd pandas
+```
 
-# run a specific query
+Run a specific query:
+
+```bash
 python pandas_query.py --path ../SF1 --queries 2
+```
 
-# run all queries and log the time metrics
-# each query is executed twice, the first attempt is for data loading warmup
-python pandas_query.py --path ../SF1 --log_timing --io_warmup
+Run all queries and log the time metrics
+
+```
+python pandas_query.py --path ../SF1 --log_timing --include_io
 ```

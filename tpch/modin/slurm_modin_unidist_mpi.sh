@@ -5,9 +5,11 @@
 #SBATCH --cpus-per-task=24
 #SBATCH --ntasks-per-node=1
 #SBATCH --partition=cpu24c
-#SBATCH --output=modin_unidist_mpi.out
+#SBATCH --output=modin_unidist_mpi.log
 
 ulimit -u unlimited
+
+# activate environment
 module load intel-oneapi-mpi/2021.9.0
 source activate /fs/fast/u20200002/envs/ds
 
@@ -33,6 +35,6 @@ export I_MPI_HYDRA_IFACE="ib0.8066"
 # change the `--path` to your local location
 mpiexec python -u modin_unidist_query.py \
     --path ../SF1 \
-    --queries 10 \
     --log_timing \
-    --io_warmup
+    --include_io \
+    --print_result

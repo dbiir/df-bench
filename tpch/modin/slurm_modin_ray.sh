@@ -1,19 +1,20 @@
 #!/bin/bash
 
-#SBATCH --job-name=modin
-#SBATCH --nodes=2
+#SBATCH --job-name=modin_on_ray
+#SBATCH --nodes=4
 #SBATCH --cpus-per-task=24
 #SBATCH --ntasks-per-node=1
-#SBATCH --partition=cpu64c
-#SBATCH --output=modin-sf10.out
+#SBATCH --partition=cpu24c
+#SBATCH --output=modin_ray.log
 
-ulimit -a
 ulimit -u unlimited
+
+# activate environment
 source activate /fs/fast/u20200002/envs/ds
 
 ### Use the debug mode to see if the shell commands are correct.
-### If you do not want the shell command logs, delete the following line.
-set -x
+### If you do not want the shell command logs, comment the following line.
+# set -x
 
 # Getting the node names
 nodes=$(scontrol show hostnames "$SLURM_JOB_NODELIST")
@@ -33,16 +34,6 @@ if [[ "$head_node_ip" == *" "* ]]; then
     fi
     echo "IPV6 address detected. We split the IPV4 address as $head_node_ip"
 fi
-
-delim=""
-joined=""
-for item in "${nodes_array[@]}"; do
-  joined="$joined$delim$item"
-  delim=","
-done
-echo "$joined"
-
-echo $joined
 
 port=6379
 ip_head=$head_node_ip:$port
@@ -71,16 +62,10 @@ sleep 10
 
 address=ray://$head_node_ip:$port
 
-export MODIN_ENGINE=unidist
-export UNIDIST_BACKEND=mpi
-export UNIDIST_MPI_HOSTS=$joined
-export UNIDIST_CPUS=129
-export I_MPI_HYDRA_IFACE="ib0.8066"
-
-. /opt/app/intel/2023/mpi/2021.9.0/env/vars.sh
-
-cd /home/u20200002/hpc/test_xorbits/df-bench/tpch/queries
-python -u modin_query.py \
-    --path /home/u20200002/hpc/test_xorbits/df-bench/tpch/SF10 \
+python -u modin_ray_query.py \
+    --path ../SF1 \
+    --endpoint ${address} \
+    --backend ray \
     --log_timing \
-    --io_warmup
+    --include_io \
+    --print_result
