@@ -1,83 +1,140 @@
+import os
+import sys
 import argparse
 import json
 import time
+import traceback
 from datetime import datetime
-from typing import Dict
 
 import pandas
+from pandas.core.frame import DataFrame as PandasDF
 
 import dask
 import dask.dataframe as pd
+from dask.distributed import Client, wait, LocalCluster
+import socket
 from dask_jobqueue import SLURMCluster
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.dirname(current_dir)
+sys.path.append(parent_dir)
+from common_utils import append_row, ANSWERS_BASE_DIR
+
 # from dask_mpi import initialize
 # initialize()
 
-from dask.distributed import Client, wait, LocalCluster
-import socket
 
-from utils import append_row
+dataset_dict = {}
 
-
-def load_lineitem(root: str):
-    data_path = root + "/lineitem.parquet"
-    df = pd.read_parquet(data_path)
-    df.L_SHIPDATE = pd.to_datetime(df.L_SHIPDATE, format="%Y-%m-%d")
-    df.L_RECEIPTDATE = pd.to_datetime(df.L_RECEIPTDATE, format="%Y-%m-%d")
-    df.L_COMMITDATE = pd.to_datetime(df.L_COMMITDATE, format="%Y-%m-%d")
-    return df
-
-
-def load_part(root: str):
-    data_path = root + "/part.parquet"
-    df = pd.read_parquet(data_path)
-    return df
+def load_lineitem(root: str, 
+                include_io: bool=False):
+    if 'lineitem' not in dataset_dict or include_io:
+        data_path = root + "/lineitem.parquet"
+        df = pd.read_parquet(data_path)
+        df.L_SHIPDATE = pd.to_datetime(df.L_SHIPDATE, format="%Y-%m-%d")
+        df.L_RECEIPTDATE = pd.to_datetime(df.L_RECEIPTDATE, format="%Y-%m-%d")
+        df.L_COMMITDATE = pd.to_datetime(df.L_COMMITDATE, format="%Y-%m-%d")
+        result = df
+        dataset_dict['lineitem'] = result
+    else:
+        result = dataset_dict['lineitem']
+    return result
 
 
-def load_orders(root: str):
-    data_path = root + "/orders.parquet"
-    df = pd.read_parquet(data_path)
-    df.O_ORDERDATE = pd.to_datetime(df.O_ORDERDATE, format="%Y-%m-%d")
-    return df
+def load_part(root: str, 
+            include_io: bool=False):
+    if 'part' not in dataset_dict or include_io:
+        data_path = root + "/part.parquet"
+        df = pd.read_parquet(data_path)
+        result = df
+        dataset_dict['part'] = result
+    else:
+        result = dataset_dict['part']
+    return result
 
 
-def load_customer(root: str):
-    data_path = root + "/customer.parquet"
-    df = pd.read_parquet(data_path)
-    return df
+def load_orders(root: str,
+            include_io: bool=False):
+    if "orders" not in dataset_dict or include_io:
+        data_path = root + "/orders.parquet"
+        df = pd.read_parquet(data_path)
+        df.O_ORDERDATE = pd.to_datetime(df.O_ORDERDATE, format="%Y-%m-%d")
+        result = df
+        dataset_dict['orders'] = result
+    else:
+        result = dataset_dict['orders']
+    return result
 
 
-def load_nation(root: str):
-    data_path = root + "/nation.parquet"
-    df = pd.read_parquet(data_path)
-    return df
+def load_customer(root: str,
+            include_io: bool=False):
+    if "customer" not in dataset_dict or include_io:
+        data_path = root + "/customer.parquet"
+        df = pd.read_parquet(data_path)
+        result = df
+        dataset_dict['customer'] = result
+    else:
+        result = dataset_dict['customer']
+    return result
 
 
-def load_region(root: str):
-    data_path = root + "/region.parquet"
-    df = pd.read_parquet(data_path)
-    return df
+def load_nation(root: str,
+            include_io: bool=False):
+    if "nation" not in dataset_dict or include_io:
+        data_path = root + "/nation.parquet"
+        df = pd.read_parquet(data_path)
+        result = df
+        dataset_dict['nation'] = result
+    else:
+        result = dataset_dict['nation']
+    return result
 
 
-def load_supplier(root: str):
-    data_path = root + "/supplier.parquet"
-    df = pd.read_parquet(data_path)
-    return df
+def load_region(root: str,
+            include_io: bool=False):
+    if "region" not in dataset_dict or include_io:
+        data_path = root + "/region.parquet"
+        df = pd.read_parquet(data_path)
+        result = df
+        dataset_dict['region'] = result
+    else:
+        result = dataset_dict['region']
+    return result
 
 
-def load_partsupp(root: str):
-    data_path = root + "/partsupp.parquet"
-    df = pd.read_parquet(data_path)
-    return df
+def load_supplier(root: str,
+            include_io: bool=False):
+    if "supplier" not in dataset_dict or include_io:
+        data_path = root + "/supplier.parquet"
+        df = pd.read_parquet(data_path)
+        result = df
+        dataset_dict['supplier'] = result
+    else:
+        result = dataset_dict['supplier']
+    return result
 
 
-def q01(root: str):
-    lineitem = load_lineitem(root)
+def load_partsupp(root: str,
+            include_io: bool=False):
+    if "partsupp" not in dataset_dict or include_io:
+        data_path = root + "/partsupp.parquet"
+        df = pd.read_parquet(data_path)
+        result = df
+        dataset_dict['partsupp'] = result
+    else:
+        result = dataset_dict['partsupp']
+    return result
 
-    t1 = time.time()
+
+def q01(root: str, 
+        include_io: bool=False):
+    lineitem = load_lineitem(root, include_io)
+
     date = datetime.strptime("1998-09-02", "%Y-%m-%d")
     lineitem_filtered = lineitem.loc[
         :,
         [
+            "L_ORDERKEY",
             "L_QUANTITY",
             "L_EXTENDEDPRICE",
             "L_DISCOUNT",
@@ -85,7 +142,6 @@ def q01(root: str):
             "L_RETURNFLAG",
             "L_LINESTATUS",
             "L_SHIPDATE",
-            "L_ORDERKEY",
         ],
     ]
     sel = lineitem_filtered.L_SHIPDATE <= date
@@ -116,11 +172,12 @@ def q01(root: str):
     )
 
     total = total.compute().reset_index().sort_values(["L_RETURNFLAG", "L_LINESTATUS"])
-    print(total)
-    print("Q01 Execution time (s): ", time.time() - t1)
+    
+    return total
 
 
-def q02(root: str):
+def q02(root: str, 
+        include_io: bool=False):
     part = load_part(root)
     partsupp = load_partsupp(root)
     supplier = load_supplier(root)
@@ -1219,56 +1276,114 @@ query_to_runner = {
 }
 
 
-def run_queries(path, queries, log_timeing, io_warmup):
+def get_query_answer(query: int, base_dir: str = ANSWERS_BASE_DIR) -> PandasDF:
+    answer_df = pandas.read_csv(
+        os.path.join(base_dir, f"q{query}.out"),
+        sep="|",
+        parse_dates=True,
+        infer_datetime_format=True,
+    )
+    return answer_df.rename(columns=lambda x: x.strip())
+
+
+def test_results(q_num: int, result_df: PandasDF):
+    answer = get_query_answer(q_num)
+
+    for column_index in range(len(answer.columns)):
+        column_name = answer.columns[column_index]
+        column_data_type = answer.iloc[:, column_index].dtype
+
+        s1 = result_df.iloc[:, column_index]
+        s2 = answer.iloc[:, column_index]
+
+        if column_data_type.name == "object":
+            s1 = s1.astype("string").apply(lambda x: x.strip())
+            s2 = s2.astype("string").apply(lambda x: x.strip())
+        
+        pandas.testing.assert_series_equal(left=s1, right=s2, 
+                check_index=False, 
+                check_names=False, 
+                check_exact=False, 
+                rtol=1e-2)
+
+
+def run_queries(path, queries, 
+            log_timing = True, 
+            include_io = False, 
+            test_result = True, 
+            print_result = False):
+    print("Start data loading")
+    total_start = time.time()
+    for query in queries:
+        loaders = query_to_loaders[query]
+        for loader in loaders:
+            loader(path, include_io)
+    print(f"Data loading time (s): {time.time() - total_start}")
     total_start = time.time()
     for query in queries:
         try:
-            if io_warmup:
-                query_to_runner[query](path)
             t1 = time.time()
-            query_to_runner[query](path)
+            result = query_to_runner[query](path, include_io)
             dur = time.time() - t1
             success = True
-        except:
+            if test_result:
+                test_results(query, result)
+            if print_result:
+                print(result)
+        except Exception as e: 
+            print(''.join(traceback.TracebackException.from_exception(e).format()))
             dur = 0.0
             success = False
         finally:
-            if log_timeing:
+            if log_timing:
                 append_row("dask", query, dur, dask.__version__, success)
     print(f"Total query execution time (s): {time.time() - total_start}")
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Dask TPC-H benchmark.")
+    parser = argparse.ArgumentParser(description="TPC-H benchmark.")
     parser.add_argument(
-        "--path", type=str, required=True, help="Path to the TPC-H dataset."
+        "--path", type=str, required=True, help="path to the TPC-H dataset."
     )
     parser.add_argument(
         "--storage_options",
         type=str,
         required=False,
-        help="Path to the storage options json file.",
+        help="storage options json file.",
     )
     parser.add_argument(
         "--queries",
         type=int,
         nargs="+",
         required=False,
-        help="Comma separated TPC-H queries to run.",
+        help="comma separated TPC-H queries to run.",
     )
     parser.add_argument(
         "--log_timing",
         action="store_true",
-        help="Log time metrics or not.",
+        help="log time metrics or not.",
     )
     parser.add_argument(
-        "--io_warmup",
+        "--include_io",
         action="store_true",
-        help="Warm up IO data loading or not.",
+        help="include IO or not.",
     )
+    parser.add_argument(
+        "--test_answer",
+        action="store_true",
+        help="test results with official answers.",
+    )
+    parser.add_argument(
+        "--print_result",
+        action="store_true",
+        help="print result.",
+    )
+    
     args = parser.parse_args()
     log_timing = args.log_timing
-    io_warmup = args.io_warmup
+    include_io = args.include_io
+    test_answer = args.test_answer
+    print_result = args.print_result
 
     # path to TPC-H data in parquet.
     path = args.path
@@ -1286,11 +1401,11 @@ def main():
         queries = args.queries
     print(f"Queries to run: {queries}")
 
-    # cluster = LocalCluster() 
-    cluster = LocalCUDACluster(protocol="tcp")
+    cluster = LocalCluster() 
+    # cluster = LocalCUDACluster(protocol="tcp")
     client = Client(cluster)
     
-    run_queries(path, queries, log_timing, io_warmup)
+    run_queries(path, queries, log_timing, include_io, test_answer, print_result)
 
 
 if __name__ == "__main__":
