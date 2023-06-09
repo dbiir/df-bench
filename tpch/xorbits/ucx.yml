@@ -1,0 +1,9 @@
+"@inherits": "@default"
+storage:
+  backends: [shared_memory]
+oscar:
+  numa:
+    external_addr_scheme: ucx
+  extra_conf:
+    ucx:
+      infiniband: true
