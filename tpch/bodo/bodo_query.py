@@ -1238,7 +1238,7 @@ def main():
         type=int,
         nargs="+",
         required=False,
-        help="Comma separated TPC-H queries to run.",
+        help="whitespace separated TPC-H queries to run.",
     )
     parser.add_argument(
         "--log_timing",

@@ -4,6 +4,7 @@ SF1/
 SF*/
 scale_facotr_1/
 scale_facotr_*/
+gen_data.sh
 *.tbl
 *.o
 *.log

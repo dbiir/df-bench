@@ -6,8 +6,9 @@ import time
 import traceback
 
 import pandas as pd
-from pandas.core.frame import DataFrame
-pd.set_option('display.max_columns', None)
+from pandas.core.frame import DataFrame as PandasDF
+
+pd.set_option("display.max_columns", None)
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.dirname(current_dir)
@@ -16,108 +17,100 @@ from common_utils import append_row, ANSWERS_BASE_DIR
 
 dataset_dict = {}
 
-def load_lineitem(root: str, 
-                include_io: bool=False):
-    if 'lineitem' not in dataset_dict or include_io:
+
+def load_lineitem(root: str, include_io: bool = False):
+    if "lineitem" not in dataset_dict or include_io:
         data_path = root + "/lineitem.parquet"
         df = pd.read_parquet(data_path)
         df.L_SHIPDATE = pd.to_datetime(df.L_SHIPDATE, format="%Y-%m-%d")
         df.L_RECEIPTDATE = pd.to_datetime(df.L_RECEIPTDATE, format="%Y-%m-%d")
         df.L_COMMITDATE = pd.to_datetime(df.L_COMMITDATE, format="%Y-%m-%d")
         result = df
-        dataset_dict['lineitem'] = result
+        dataset_dict["lineitem"] = result
     else:
-        result = dataset_dict['lineitem']
+        result = dataset_dict["lineitem"]
     return result
 
 
-def load_part(root: str, 
-            include_io: bool=False):
-    if 'part' not in dataset_dict or include_io:
+def load_part(root: str, include_io: bool = False):
+    if "part" not in dataset_dict or include_io:
         data_path = root + "/part.parquet"
         df = pd.read_parquet(data_path)
         result = df
-        dataset_dict['part'] = result
+        dataset_dict["part"] = result
     else:
-        result = dataset_dict['part']
+        result = dataset_dict["part"]
     return result
 
 
-def load_orders(root: str,
-            include_io: bool=False):
+def load_orders(root: str, include_io: bool = False):
     if "orders" not in dataset_dict or include_io:
         data_path = root + "/orders.parquet"
         df = pd.read_parquet(data_path)
         df.O_ORDERDATE = pd.to_datetime(df.O_ORDERDATE, format="%Y-%m-%d")
         result = df
-        dataset_dict['orders'] = result
+        dataset_dict["orders"] = result
     else:
-        result = dataset_dict['orders']
+        result = dataset_dict["orders"]
     return result
 
 
-def load_customer(root: str,
-            include_io: bool=False):
+def load_customer(root: str, include_io: bool = False):
     if "customer" not in dataset_dict or include_io:
         data_path = root + "/customer.parquet"
         df = pd.read_parquet(data_path)
         result = df
-        dataset_dict['customer'] = result
+        dataset_dict["customer"] = result
     else:
-        result = dataset_dict['customer']
+        result = dataset_dict["customer"]
     return result
 
 
-def load_nation(root: str,
-            include_io: bool=False):
+def load_nation(root: str, include_io: bool = False):
     if "nation" not in dataset_dict or include_io:
         data_path = root + "/nation.parquet"
         df = pd.read_parquet(data_path)
         result = df
-        dataset_dict['nation'] = result
+        dataset_dict["nation"] = result
     else:
-        result = dataset_dict['nation']
+        result = dataset_dict["nation"]
     return result
 
 
-def load_region(root: str,
-            include_io: bool=False):
+def load_region(root: str, include_io: bool = False):
     if "region" not in dataset_dict or include_io:
         data_path = root + "/region.parquet"
         df = pd.read_parquet(data_path)
         result = df
-        dataset_dict['region'] = result
+        dataset_dict["region"] = result
     else:
-        result = dataset_dict['region']
+        result = dataset_dict["region"]
     return result
 
 
-def load_supplier(root: str,
-            include_io: bool=False):
+def load_supplier(root: str, include_io: bool = False):
     if "supplier" not in dataset_dict or include_io:
         data_path = root + "/supplier.parquet"
         df = pd.read_parquet(data_path)
         result = df
-        dataset_dict['supplier'] = result
+        dataset_dict["supplier"] = result
     else:
-        result = dataset_dict['supplier']
+        result = dataset_dict["supplier"]
     return result
 
 
-def load_partsupp(root: str,
-            include_io: bool=False):
+def load_partsupp(root: str, include_io: bool = False):
     if "partsupp" not in dataset_dict or include_io:
         data_path = root + "/partsupp.parquet"
         df = pd.read_parquet(data_path)
         result = df
-        dataset_dict['partsupp'] = result
+        dataset_dict["partsupp"] = result
     else:
-        result = dataset_dict['partsupp']
+        result = dataset_dict["partsupp"]
     return result
 
 
-def q01(root: str, 
-        include_io: bool=False):
+def q01(root: str, include_io: bool = False):
     lineitem = load_lineitem(root, include_io)
 
     date = pd.Timestamp("1998-09-02")
@@ -171,17 +164,16 @@ def q01(root: str,
         }
     )
     total = total.sort_values(["L_RETURNFLAG", "L_LINESTATUS"])
-    
+
     return total
 
 
-def q02(root: str, 
-        include_io: bool=False):
-    part = load_part(root)
-    partsupp = load_partsupp(root)
-    supplier = load_supplier(root)
-    nation = load_nation(root)
-    region = load_region(root)
+def q02(root: str, include_io: bool = False):
+    part = load_part(root, include_io)
+    partsupp = load_partsupp(root, include_io)
+    supplier = load_supplier(root, include_io)
+    nation = load_nation(root, include_io)
+    region = load_region(root, include_io)
 
     nation_filtered = nation.loc[:, ["N_NATIONKEY", "N_NAME", "N_REGIONKEY"]]
     region_filtered = region[(region["R_NAME"] == "EUROPE")]
@@ -293,15 +285,14 @@ def q02(root: str,
         ],
     )
     total = total.head(100)
-    
+
     return total
 
 
-def q03(root: str, 
-        include_io: bool=False):
-    lineitem = load_lineitem(root)
-    orders = load_orders(root)
-    customer = load_customer(root)
+def q03(root: str, include_io: bool = False):
+    lineitem = load_lineitem(root, include_io)
+    orders = load_orders(root, include_io)
+    customer = load_customer(root, include_io)
 
     date = pd.Timestamp("1995-03-04")
     lineitem_filtered = lineitem.loc[
@@ -327,16 +318,16 @@ def q03(root: str,
         .sum()
         .sort_values(["TMP"], ascending=False)
     )
+
     res = total.loc[:, ["L_ORDERKEY", "TMP", "O_ORDERDATE", "O_SHIPPRIORITY"]]
     res = res.head(10)
 
     return res
 
 
-def q04(root: str, 
-        include_io: bool=False):
-    lineitem = load_lineitem(root)
-    orders = load_orders(root)
+def q04(root: str, include_io: bool = False):
+    lineitem = load_lineitem(root, include_io)
+    orders = load_orders(root, include_io)
 
     date1 = pd.Timestamp("1993-11-01")
     date2 = pd.Timestamp("1993-08-01")
@@ -350,42 +341,42 @@ def q04(root: str,
         .count()
         .sort_values(["O_ORDERPRIORITY"])
     )
-    
+
     return total
 
 
-def q05(root: str, 
-        include_io: bool=False):
-    lineitem = load_lineitem(root)
-    orders = load_orders(root)
-    customer = load_customer(root)
-    supplier = load_supplier(root)
-    nation = load_nation(root)
-    region = load_region(root)
+def q05(root: str, include_io: bool = False):
+    lineitem = load_lineitem(root, include_io)
+    orders = load_orders(root, include_io)
+    customer = load_customer(root, include_io)
+    supplier = load_supplier(root, include_io)
+    nation = load_nation(root, include_io)
+    region = load_region(root, include_io)
 
     date1 = pd.Timestamp("1996-01-01")
     date2 = pd.Timestamp("1997-01-01")
     rsel = region.R_NAME == "ASIA"
     osel = (orders.O_ORDERDATE >= date1) & (orders.O_ORDERDATE < date2)
+
     forders = orders[osel]
     fregion = region[rsel]
     jn1 = fregion.merge(nation, left_on="R_REGIONKEY", right_on="N_REGIONKEY")
     jn2 = jn1.merge(customer, left_on="N_NATIONKEY", right_on="C_NATIONKEY")
     jn3 = jn2.merge(forders, left_on="C_CUSTKEY", right_on="O_CUSTKEY")
     jn4 = jn3.merge(lineitem, left_on="O_ORDERKEY", right_on="L_ORDERKEY")
+
     jn5 = supplier.merge(
         jn4, left_on=["S_SUPPKEY", "S_NATIONKEY"], right_on=["L_SUPPKEY", "N_NATIONKEY"]
     )
     jn5["REVENUE"] = jn5.L_EXTENDEDPRICE * (1.0 - jn5.L_DISCOUNT)
     gb = jn5.groupby("N_NAME", as_index=False)["REVENUE"].sum()
     total = gb.sort_values("REVENUE", ascending=False)
-    
+
     return total
 
 
-def q06(root: str, 
-        include_io: bool=False):
-    lineitem = load_lineitem(root)
+def q06(root: str, include_io: bool = False):
+    lineitem = load_lineitem(root, include_io)
 
     date1 = pd.Timestamp("1996-01-01")
     date2 = pd.Timestamp("1997-01-01")
@@ -401,20 +392,18 @@ def q06(root: str,
     )
     flineitem = lineitem_filtered[sel]
     total = (flineitem.L_EXTENDEDPRICE * flineitem.L_DISCOUNT).sum()
-    
+
     return total
 
 
-def q07(root: str, 
-        include_io: bool=False):
-    lineitem = load_lineitem(root)
-    orders = load_orders(root)
-    customer = load_customer(root)
-    supplier = load_supplier(root)
-    nation = load_nation(root)
+def q07(root: str, include_io: bool = False):
+    lineitem = load_lineitem(root, include_io)
+    orders = load_orders(root, include_io)
+    customer = load_customer(root, include_io)
+    supplier = load_supplier(root, include_io)
+    nation = load_nation(root, include_io)
 
     """This version is faster than q07_old. Keeping the old one for reference"""
-    t1 = time.time()
     lineitem_filtered = lineitem[
         (lineitem["L_SHIPDATE"] >= pd.Timestamp("1995-01-01"))
         & (lineitem["L_SHIPDATE"] < pd.Timestamp("1997-01-01"))
@@ -505,19 +494,18 @@ def q07(root: str,
             True,
         ],
     )
-    
+
     return total
 
 
-def q08(root: str, 
-        include_io: bool=False):
-    part = load_part(root)
-    lineitem = load_lineitem(root)
-    orders = load_orders(root)
-    customer = load_customer(root)
-    supplier = load_supplier(root)
-    nation = load_nation(root)
-    region = load_region(root)
+def q08(root: str, include_io: bool = False):
+    part = load_part(root, include_io)
+    lineitem = load_lineitem(root, include_io)
+    orders = load_orders(root, include_io)
+    customer = load_customer(root, include_io)
+    supplier = load_supplier(root, include_io)
+    nation = load_nation(root, include_io)
+    region = load_region(root, include_io)
 
     part_filtered = part[(part["P_TYPE"] == "ECONOMY ANODIZED STEEL")]
     part_filtered = part_filtered.loc[:, ["P_PARTKEY"]]
@@ -574,7 +562,6 @@ def q08(root: str,
         numerator = df["VOLUME"].sum()
         return numerator / demonimator
 
-    # modin returns empty column with as_index=false
     total = total.groupby("O_YEAR").apply(udf).reset_index()
     total.columns = ["O_YEAR", "MKT_SHARE"]
     total = total.sort_values(
@@ -585,18 +572,17 @@ def q08(root: str,
             True,
         ],
     )
-    
+
     return total
 
 
-def q09(root: str, 
-        include_io: bool=False):
-    part = load_part(root)
-    partsupp = load_partsupp(root)
-    lineitem = load_lineitem(root)
-    orders = load_orders(root)
-    supplier = load_supplier(root)
-    nation = load_nation(root)
+def q09(root: str, include_io: bool = False):
+    part = load_part(root, include_io)
+    partsupp = load_partsupp(root, include_io)
+    lineitem = load_lineitem(root, include_io)
+    orders = load_orders(root, include_io)
+    supplier = load_supplier(root, include_io)
+    nation = load_nation(root, include_io)
 
     psel = part.P_NAME.str.contains("ghost")
     fpart = part[psel]
@@ -613,16 +599,15 @@ def q09(root: str,
     jn5["O_YEAR"] = jn5.O_ORDERDATE.apply(lambda x: x.year)
     gb = jn5.groupby(["N_NAME", "O_YEAR"], as_index=False)["TMP"].sum()
     total = gb.sort_values(["N_NAME", "O_YEAR"], ascending=[True, False])
-    
+
     return total
 
 
-def q10(root: str, 
-        include_io: bool=False):
-    lineitem = load_lineitem(root)
-    orders = load_orders(root)
-    nation = load_nation(root)
-    customer = load_customer(root)
+def q10(root: str, include_io: bool = False):
+    lineitem = load_lineitem(root, include_io)
+    orders = load_orders(root, include_io)
+    nation = load_nation(root, include_io)
+    customer = load_customer(root, include_io)
 
     date1 = pd.Timestamp("1994-11-01")
     date2 = pd.Timestamp("1995-02-01")
@@ -648,14 +633,14 @@ def q10(root: str,
     )["TMP"].sum()
     total = gb.sort_values("TMP", ascending=False)
     total = total.head(20)
+
     return total
 
 
-def q11(root: str, 
-        include_io: bool=False):
-    partsupp = load_partsupp(root)
-    supplier = load_supplier(root)
-    nation = load_nation(root)
+def q11(root: str, include_io: bool = False):
+    partsupp = load_partsupp(root, include_io)
+    supplier = load_supplier(root, include_io)
+    nation = load_nation(root, include_io)
 
     partsupp_filtered = partsupp.loc[:, ["PS_PARTKEY", "PS_SUPPKEY"]]
     partsupp_filtered["TOTAL_COST"] = (
@@ -665,7 +650,7 @@ def q11(root: str,
     ps_supp_merge = partsupp_filtered.merge(
         supplier_filtered, left_on="PS_SUPPKEY", right_on="S_SUPPKEY", how="inner"
     )
-    ps_supp_merge.loc[:, ["PS_PARTKEY", "S_NATIONKEY", "TOTAL_COST"]]
+    ps_supp_merge = ps_supp_merge.loc[:, ["PS_PARTKEY", "S_NATIONKEY", "TOTAL_COST"]]
     nation_filtered = nation[(nation["N_NAME"] == "GERMANY")]
     nation_filtered = nation_filtered.loc[:, ["N_NATIONKEY"]]
     ps_supp_n_merge = ps_supp_merge.merge(
@@ -678,14 +663,13 @@ def q11(root: str,
     )
     total = total[total["VALUE"] > sum_val]
     total = total.sort_values("VALUE", ascending=False)
-    
+
     return total
 
 
-def q12(root: str, 
-        include_io: bool=False):
-    lineitem = load_lineitem(root)
-    orders = load_orders(root)
+def q12(root: str, include_io: bool = False):
+    lineitem = load_lineitem(root, include_io)
+    orders = load_orders(root, include_io)
 
     date1 = pd.Timestamp("1994-01-01")
     date2 = pd.Timestamp("1995-01-01")
@@ -712,14 +696,13 @@ def q12(root: str,
     return total
 
 
-def q13(root: str, 
-        include_io: bool=False):
-    customer = load_customer(root)
-    orders = load_orders(root)
+def q13(root: str, include_io: bool = False):
+    customer = load_customer(root, include_io)
+    orders = load_orders(root, include_io)
 
     customer_filtered = customer.loc[:, ["C_CUSTKEY"]]
     orders_filtered = orders[
-        ~orders["O_COMMENT"].str.contains("special(\S|\s)*requests")
+        ~orders["O_COMMENT"].str.contains("special(\\S|\\s)*requests")
     ]
     orders_filtered = orders_filtered.loc[:, ["O_ORDERKEY", "O_CUSTKEY"]]
     c_o_merged = customer_filtered.merge(
@@ -738,14 +721,13 @@ def q13(root: str,
             False,
         ],
     )
-    
+
     return total
 
 
-def q14(root: str, 
-        include_io: bool=False):
-    lineitem = load_lineitem(root)
-    part = load_part(root)
+def q14(root: str, include_io: bool = False):
+    lineitem = load_lineitem(root, include_io)
+    part = load_part(root, include_io)
 
     startDate = pd.Timestamp("1994-03-01")
     endDate = pd.Timestamp("1994-04-01")
@@ -761,15 +743,14 @@ def q14(root: str,
     jn = flineitem.merge(part_filtered, left_on="L_PARTKEY", right_on="P_PARTKEY")
     jn["TMP"] = jn.L_EXTENDEDPRICE * (1.0 - jn.L_DISCOUNT)
     total = jn[jn.P_TYPE.str.startswith(p_type_like)].TMP.sum() * 100 / jn.TMP.sum()
-    
+
     return total
 
 
-def q15(root: str, 
-        include_io: bool=False):
-    lineitem = load_lineitem(root)
-    supplier = load_supplier(root)
-    
+def q15(root: str, include_io: bool = False):
+    lineitem = load_lineitem(root, include_io)
+    supplier = load_supplier(root, include_io)
+
     lineitem_filtered = lineitem[
         (lineitem["L_SHIPDATE"] >= pd.Timestamp("1996-01-01"))
         & (
@@ -795,15 +776,14 @@ def q15(root: str,
     total = total.loc[
         :, ["S_SUPPKEY", "S_NAME", "S_ADDRESS", "S_PHONE", "TOTAL_REVENUE"]
     ]
-    
+
     return total
 
 
-def q16(root: str, 
-        include_io: bool=False):
-    part = load_part(root)
-    partsupp = load_partsupp(root)
-    supplier = load_supplier(root)
+def q16(root: str, include_io: bool = False):
+    part = load_part(root, include_io)
+    partsupp = load_partsupp(root, include_io)
+    supplier = load_supplier(root, include_io)
 
     part_filtered = part[
         (part["P_BRAND"] != "Brand#45")
@@ -817,10 +797,10 @@ def q16(root: str,
     )
     total = total.loc[:, ["P_BRAND", "P_TYPE", "P_SIZE", "PS_SUPPKEY"]]
     supplier_filtered = supplier[
-        supplier["S_COMMENT"].str.contains("Customer(\S|\s)*Complaints")
+        supplier["S_COMMENT"].str.contains("Customer(\\S|\\s)*Complaints")
     ]
     supplier_filtered = supplier_filtered.loc[:, ["S_SUPPKEY"]].drop_duplicates()
-    # left merge to select only ps_suppkey values not in supplier_filtered
+    # left merge to select only PS_SUPPKEY values not in supplier_filtered
     total = total.merge(
         supplier_filtered, left_on="PS_SUPPKEY", right_on="S_SUPPKEY", how="left"
     )
@@ -834,14 +814,13 @@ def q16(root: str,
         by=["SUPPLIER_CNT", "P_BRAND", "P_TYPE", "P_SIZE"],
         ascending=[False, True, True, True],
     )
-    
+
     return total
 
 
-def q17(root: str, 
-        include_io: bool=False):
-    lineitem = load_lineitem(root)
-    part = load_part(root)
+def q17(root: str, include_io: bool = False):
+    lineitem = load_lineitem(root, include_io)
+    part = load_part(root, include_io)
 
     left = lineitem.loc[:, ["L_PARTKEY", "L_QUANTITY", "L_EXTENDEDPRICE"]]
     right = part[((part["P_BRAND"] == "Brand#23") & (part["P_CONTAINER"] == "MED BOX"))]
@@ -863,15 +842,14 @@ def q17(root: str,
     )
     total = total[total["L_QUANTITY"] < total["avg"]]
     total = pd.DataFrame({"avg_yearly": [total["L_EXTENDEDPRICE"].sum() / 7.0]})
-    
+
     return total
 
 
-def q18(root: str, 
-        include_io: bool=False):
-    lineitem = load_lineitem(root)
-    orders = load_orders(root)
-    customer = load_customer(root)
+def q18(root: str, include_io: bool = False):
+    lineitem = load_lineitem(root, include_io)
+    orders = load_orders(root, include_io)
+    customer = load_customer(root, include_io)
 
     gb1 = lineitem.groupby("L_ORDERKEY", as_index=False)["L_QUANTITY"].sum()
     fgb1 = gb1[gb1.L_QUANTITY > 300]
@@ -882,14 +860,14 @@ def q18(root: str,
         as_index=False,
     )["L_QUANTITY"].sum()
     total = gb2.sort_values(["O_TOTALPRICE", "O_ORDERDATE"], ascending=[False, True])
-    print(total.head(100))
+    total = total.head(100)
+
     return total
 
 
-def q19(root: str, 
-        include_io: bool=False):
-    lineitem = load_lineitem(root)
-    part = load_part(root)
+def q19(root: str, include_io: bool = False):
+    lineitem = load_lineitem(root, include_io)
+    part = load_part(root, include_io)
 
     Brand31 = "Brand#31"
     Brand43 = "Brand#43"
@@ -986,17 +964,16 @@ def q19(root: str,
     )
     jn = jn[jnsel]
     total = (jn.L_EXTENDEDPRICE * (1.0 - jn.L_DISCOUNT)).sum()
-    
+
     return total
 
 
-def q20(root: str, 
-        include_io: bool=False):
-    lineitem = load_lineitem(root)
-    part = load_part(root)
-    nation = load_nation(root)
-    partsupp = load_partsupp(root)
-    supplier = load_supplier(root)
+def q20(root: str, include_io: bool = False):
+    lineitem = load_lineitem(root, include_io)
+    part = load_part(root, include_io)
+    nation = load_nation(root, include_io)
+    partsupp = load_partsupp(root, include_io)
+    supplier = load_supplier(root, include_io)
 
     date1 = pd.Timestamp("1996-01-01")
     date2 = pd.Timestamp("1997-01-01")
@@ -1021,15 +998,15 @@ def q20(root: str,
     jn4 = fnation.merge(jn3, left_on="N_NATIONKEY", right_on="S_NATIONKEY")
     jn4 = jn4.loc[:, ["S_NAME", "S_ADDRESS"]]
     total = jn4.sort_values("S_NAME").drop_duplicates()
-    
+
     return total
 
 
-def q21(root: str, include_io: bool=False):
-    lineitem = load_lineitem(root)
-    orders = load_orders(root)
-    supplier = load_supplier(root)
-    nation = load_nation(root)
+def q21(root: str, include_io: bool = False):
+    lineitem = load_lineitem(root, include_io)
+    orders = load_orders(root, include_io)
+    supplier = load_supplier(root, include_io)
+    nation = load_nation(root, include_io)
 
     lineitem_filtered = lineitem.loc[
         :, ["L_ORDERKEY", "L_SUPPKEY", "L_RECEIPTDATE", "L_COMMITDATE"]
@@ -1090,24 +1067,14 @@ def q21(root: str, include_io: bool=False):
     total = total.loc[:, ["S_NAME"]]
     total = total.groupby("S_NAME", as_index=False).size()
     total.columns = ["S_NAME", "NUMWAIT"]
-    total = total.sort_values(
-        by=[
-            "NUMWAIT",
-            "S_NAME",
-        ],
-        ascending=[
-            False,
-            True,
-        ],
-    )
-    
+    total = total.sort_values(by=["NUMWAIT", "S_NAME"], ascending=[False, True])
+
     return total
 
 
-def q22(root: str, 
-        include_io: bool=False):
-    customer = load_customer(root)
-    orders = load_orders(root)
+def q22(root: str, include_io: bool = False):
+    customer = load_customer(root, include_io)
+    orders = load_orders(root, include_io)
 
     customer_filtered = customer.loc[:, ["C_ACCTBAL", "C_CUSTKEY"]]
     customer_filtered["CNTRYCODE"] = customer["C_PHONE"].str.slice(0, 2)
@@ -1145,7 +1112,7 @@ def q22(root: str,
             True,
         ],
     )
-    
+
     return total
 
 
@@ -1222,7 +1189,7 @@ query_to_runner = {
 }
 
 
-def get_query_answer(query: int, base_dir: str = ANSWERS_BASE_DIR) -> DataFrame:
+def get_query_answer(query: int, base_dir: str = ANSWERS_BASE_DIR) -> PandasDF:
     answer_df = pd.read_csv(
         os.path.join(base_dir, f"q{query}.out"),
         sep="|",
@@ -1232,7 +1199,7 @@ def get_query_answer(query: int, base_dir: str = ANSWERS_BASE_DIR) -> DataFrame:
     return answer_df.rename(columns=lambda x: x.strip())
 
 
-def test_results(q_num: int, result_df: DataFrame):
+def test_results(q_num: int, result_df: PandasDF):
     answer = get_query_answer(q_num)
 
     for column_index in range(len(answer.columns)):
@@ -1245,19 +1212,25 @@ def test_results(q_num: int, result_df: DataFrame):
         if column_data_type.name == "object":
             s1 = s1.astype("string").apply(lambda x: x.strip())
             s2 = s2.astype("string").apply(lambda x: x.strip())
-        
-        pd.testing.assert_series_equal(left=s1, right=s2, 
-                check_index=False, 
-                check_names=False, 
-                check_exact=False, 
-                rtol=1e-2)
+
+        pd.testing.assert_series_equal(
+            left=s1,
+            right=s2,
+            check_index=False,
+            check_names=False,
+            check_exact=False,
+            rtol=1e-2,
+        )
 
 
-def run_queries(path, queries, 
-            log_timing = True, 
-            include_io = False, 
-            test_result = True, 
-            print_result = False):
+def run_queries(
+    path,
+    queries,
+    log_timing=True,
+    include_io=False,
+    test_result=True,
+    print_result=False,
+):
     print("Start data loading")
     total_start = time.time()
     for query in queries:
@@ -1276,8 +1249,8 @@ def run_queries(path, queries,
                 test_results(query, result)
             if print_result:
                 print(result)
-        except Exception as e: 
-            print(''.join(traceback.TracebackException.from_exception(e).format()))
+        except Exception as e:
+            print("".join(traceback.TracebackException.from_exception(e).format()))
             dur = 0.0
             success = False
         finally:
@@ -1302,7 +1275,7 @@ def main():
         type=int,
         nargs="+",
         required=False,
-        help="comma separated TPC-H queries to run.",
+        help="whitespace separated TPC-H queries to run.",
     )
     parser.add_argument(
         "--log_timing",
@@ -1324,7 +1297,7 @@ def main():
         action="store_true",
         help="print result.",
     )
-    
+
     args = parser.parse_args()
     log_timing = args.log_timing
     include_io = args.include_io
